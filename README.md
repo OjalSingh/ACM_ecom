@@ -1,7 +1,3 @@
-Got it! Let’s make your README **professional, clear, and structured**, but still sound like a **learner who understands what they’ve built**. Here’s the revised version:
-
----
-
 # ACM E-Commerce Website
 
 ## Overview
