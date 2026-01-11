@@ -1,17 +1,15 @@
 import axios from "axios";
 
-// Base URL of your backend
 const API = axios.create({
-  baseURL: "http://localhost:5000/api", // backend runs on port 5000
+  baseURL: "http://localhost:5000/api",
 });
 
-// Optional: attach token for auth
-export const setAuthToken = (token) => {
+API.interceptors.request.use((req) => {
+  const token = localStorage.getItem("token");
   if (token) {
-    API.defaults.headers.common["Authorization"] = token;
-  } else {
-    delete API.defaults.headers.common["Authorization"];
+    req.headers.Authorization = `Bearer ${token}`;
   }
-};
+  return req;
+});
 
 export default API;

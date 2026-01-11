@@ -1,30 +1,57 @@
-import React, { useState } from "react";
-import API, { setAuthToken } from "../api";
+import { useState } from "react";
+import API from "../api";
+import { useNavigate } from "react-router-dom";
 
 const Login = () => {
+  const navigate = useNavigate();
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setError("");
+
     try {
-      const res = await API.post("/auth/login", { email, password });
-      const token = res.data.token;
-      setAuthToken(token); // optional: store globally
-      localStorage.setItem("token", token); // store for reloads
-      alert("Logged in successfully!");
-      console.log(res.data);
+      const res = await API.post("/auth/login", {
+        email,
+        password,
+      });
+
+      localStorage.setItem("token", res.data.token);
+      localStorage.setItem("user", JSON.stringify(res.data.user));
+
+      navigate("/products");
     } catch (err) {
-      alert(err.response?.data?.msg || "Error logging in");
+      setError(err.response?.data?.message || "Login failed");
     }
   };
 
   return (
-    <form onSubmit={handleSubmit}>
-      <input placeholder="Email" value={email} onChange={e => setEmail(e.target.value)} />
-      <input type="password" placeholder="Password" value={password} onChange={e => setPassword(e.target.value)} />
-      <button type="submit">Login</button>
-    </form>
+    <div className="auth-container">
+      <h2>Login</h2>
+
+      {error && <p className="error">{error}</p>}
+
+      <form onSubmit={handleSubmit}>
+        <input
+          type="email"
+          placeholder="Email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+        />
+
+        <input
+          type="password"
+          placeholder="Password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+        />
+
+        <button type="submit">Login</button>
+      </form>
+    </div>
   );
 };
 

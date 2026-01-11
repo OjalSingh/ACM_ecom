@@ -1,29 +1,19 @@
-const express = require("express");
-const Order = require("../models/Order");
+const router = require("express").Router();
 const auth = require("../middleware/auth");
 
-const router = express.Router();
-
 router.post("/checkout", auth, async (req, res) => {
-  try {
-    const order = await Order.create({
-      userId: req.userId,
-      items: req.body.items,
-      total: req.body.total,
-    });
-    res.json({ msg: "Order placed", order });
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-});
+  const { items, total } = req.body;
 
-router.get("/my-orders", auth, async (req, res) => {
-  try {
-    const orders = await Order.find({ userId: req.userId });
-    res.json(orders);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
+  if (!items || !items.length) {
+    return res.status(400).json({ message: "Cart is empty" });
   }
+
+  res.status(200).json({
+    message: "Order placed successfully",
+    total,
+    itemsCount: items.length,
+    userId: req.user.id,
+  });
 });
 
 module.exports = router;
